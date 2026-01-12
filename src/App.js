@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,  // غير BrowserRouter إلى HashRouter
   Routes,
   Route,
   Navigate,
@@ -39,11 +39,11 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   }
 
   if (!user) {
-    return <Navigate to="/admin/login" />;
+    return <Navigate to="/admin/login" replace />;
   }
 
   if (requireAdmin && !isAdmin) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
   return children;
@@ -66,6 +66,7 @@ function App() {
               }}
             />
 
+            {/* Show Header for all routes except admin */}
             <Routes>
               <Route path="/admin/*" element={null} />
               <Route path="*" element={<Header />} />
@@ -115,7 +116,8 @@ function App() {
                 }
               />
 
-              <Route path="*" element={<Navigate to="/" />} />
+              {/* Redirect 404 to home */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
         </Router>
