@@ -1,13 +1,17 @@
 import React from "react";
 import {
-  HashRouter as Router,  // غير BrowserRouter إلى HashRouter
+  BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
+  Outlet,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+
+// Components
+import Header from "./components/Header";
 
 // Pages
 import Home from "./pages/Home";
@@ -16,7 +20,6 @@ import Projects from "./pages/Projects";
 import Skills from "./pages/Skills";
 import Contact from "./pages/Contact";
 import Friends from "./pages/Friends";
-import Header from "./components/Header";
 
 // Admin Pages
 import AdminLogin from "./pages/Admin/AdminLogin";
@@ -49,6 +52,21 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   return children;
 };
 
+// Layout مع Header للمسارات العادية
+const MainLayout = () => {
+  return (
+    <>
+      <Header />
+      <Outlet />
+    </>
+  );
+};
+
+// Layout بدون Header لـ Admin
+const AdminLayout = () => {
+  return <Outlet />;
+};
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -66,57 +84,55 @@ function App() {
               }}
             />
 
-            {/* Show Header for all routes except admin */}
             <Routes>
-              <Route path="/admin/*" element={null} />
-              <Route path="*" element={<Header />} />
-            </Routes>
+              {/* المسارات العامة مع Header */}
+              <Route element={<MainLayout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/projects" element={<Projects />} />
+                <Route path="/skills" element={<Skills />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/friends" element={<Friends />} />
+              </Route>
 
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/skills" element={<Skills />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/friends" element={<Friends />} />
+              {/* مسارات Admin بدون Header */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route path="login" element={<AdminLogin />} />
+                <Route
+                  index
+                  element={
+                    <ProtectedRoute requireAdmin>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="projects"
+                  element={
+                    <ProtectedRoute requireAdmin>
+                      <AdminProjects />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="friends"
+                  element={
+                    <ProtectedRoute requireAdmin>
+                      <AdminFriends />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="skills"
+                  element={
+                    <ProtectedRoute requireAdmin>
+                      <AdminSkills />
+                    </ProtectedRoute>
+                  }
+                />
+              </Route>
 
-              {/* Admin Routes */}
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute requireAdmin>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/projects"
-                element={
-                  <ProtectedRoute requireAdmin>
-                    <AdminProjects />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/friends"
-                element={
-                  <ProtectedRoute requireAdmin>
-                    <AdminFriends />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/skills"
-                element={
-                  <ProtectedRoute requireAdmin>
-                    <AdminSkills />
-                  </ProtectedRoute>
-                }
-              />
-
-              {/* Redirect 404 to home */}
+              {/* 404 Redirect */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
