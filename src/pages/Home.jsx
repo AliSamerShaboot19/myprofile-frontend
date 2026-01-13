@@ -153,6 +153,17 @@ const Home = () => {
                 View More Skills
               </motion.button>
             </Link>
+            <Link to="/admin" className="ml-4">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-600 
+                       rounded-lg font-bold text-lg shadow-lg 
+                       hover:shadow-cyan-500/25 transition-shadow"
+              >
+                Login
+              </motion.button>
+            </Link>
           </motion.div>
         </motion.section>
 
